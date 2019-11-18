@@ -4,7 +4,7 @@
 
 Paper: 《Word Embedding based Edit Distance》
 
-For finding the most similar word in chinese chatbot, I realize a dynamic programming algorithm in kd-tree. With the result of k edit distance word, I realize a new method called Word Embedding based Edit Distance (WED), which incorporates word embedding into edit distance.
+For finding the most similar word in a chatbot, I complete a dynamic programming algorithm in kd-tree. In this project, with the result of k edit distance word, I also realize a new idea called Word Embedding based Edit Distance (WED), which incorporates word embedding into edit distance.
 
 Data: restaurant.json
 
