@@ -1,7 +1,13 @@
 import numpy as np
 from gensim.models import Word2Vec
-from prepareSentences import getSentences
+import json
+# from prepareSentences import getSentences
 import math
+
+def getSentences():
+    with open('./restaurant.json', 'r') as fp:
+        res = json.load(fp)
+        return res
 
 class WED():    
     def __init__(self, embedding, params):
@@ -30,8 +36,36 @@ class WED():
             return 1 - (self.params["l"] * np.max(sim_list) + self.params["m"])
         else:
             return 1
+    
 
-    def similar(self, s1, s2):
+
+    def _distribute_similarity(self, s1, s2):
+        LongStr = s1
+        ShortStr = s2
+        if len(s1) < len(s2):
+            LongStr = s2
+            ShortStr = s1
+
+        res = 0
+        for i in range(len(LongStr)):
+            idx = i + 1
+            if idx > len(ShortStr):
+                res += math.exp(-1 * idx)
+                continue
+
+            if LongStr[i] != ShortStr[i]:
+                res += math.exp(-1 * idx)
+
+        return res
+
+    def similar(self, s1, s2, needDistribute_similarity=True):
+        if needDistribute_similarity:
+            return self._distribute_similarity(s1, s2) + self._similar(s1, s2)
+        else:
+            return self._similar(s1, s2)
+
+
+    def _similar(self, s1, s2):
         s_a = self.tokenize(s1)
         s_b = self.tokenize(s2)
 
@@ -48,7 +82,7 @@ class WED():
             for j in range(1, l_b + 1):
                 insertion_cost = 1 - self._largest_similarity(s_b[j - 1], s_a,  i - 1)
                 deletion_cost = 1 - self._largest_similarity(s_a[i - 1], s_b, j - 1)
-                substitution_cost = 2 - 2 * self._word_similarity(s_a[i - 1], s_b[j - 1])
+                substitution_cost = 1 -  self._word_similarity(s_a[i - 1], s_b[j - 1])
                 dp[i][j] = min(dp[i][j - 1] + insertion_cost,
                                dp[i - 1][j] + deletion_cost,
                                dp[i - 1][j - 1] + substitution_cost) 
@@ -74,5 +108,8 @@ if __name__ == "__main__":
     # print(wed.similar('泰記小廚', '泰記')) 0.6640544962599546
     print(wed.similar('泰記小廚', '泰記'))
     print(wed.similar('泰記小廚', '華記小廚'))
+    # _distribute_similarity
+    # print(wed._distribute_similarity('泰記小廚', '泰記'))
+    # print(wed._distribute_similarity('泰記小廚', '華記小廚'))
 
 

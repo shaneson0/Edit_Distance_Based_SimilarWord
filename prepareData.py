@@ -10,3 +10,8 @@ def getSentences():
 if __name__ == "__main__":
     sentence = getSentences()
     print(sentence)
+
+
+
+
+
